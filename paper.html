@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Folding Game</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .paper {
+            width: 300px;
+            height: 150px;
+            background-color: #fff;
+            border: 1px solid #000;
+            margin: 20px;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .description {
+            font-size: 18px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="paper" id="paper"></div>
+    <button id="foldButton">Fold</button>
+    <div class="score" id="score">Thickness: 0.1mm</div>
+    <div class="description" id="description">Start folding to see how thick the paper gets!</div>
+
+    <script>
+        const paperDiv = document.getElementById('paper');
+        const foldButton = document.getElementById('foldButton');
+        const scoreDiv = document.getElementById('score');
+        const descriptionDiv = document.getElementById('description');
+        let thickness = 0.1; // Starting thickness in mm
+        let foldCount = 0;
+        
+        const moonDistanceKm = 439805; // Distance to the moon in kilometers
+        const moonDistanceMm = moonDistanceKm * 1000000; // Convert to millimeters
+
+        // Conversion factors
+        const mmToCm = 0.1;
+        const mmToInches = 0.03937;
+
+        const descriptions = [
+            { thickness: 0.2, text: "The thickness of a strand of human hair." },
+            { thickness: 0.4, text: "The width of a grain of sand." },
+            { thickness: 0.8, text: "The width of a pencil's tip." },
+            { thickness: 1.6, text: "The thickness of a strand of spaghetti." },
+            { thickness: 3.2, text: "The thickness of a wooden pencil." },
+            { thickness: 6.4, text: "The thickness of a matchstick." },
+            { thickness: 12.8, text: "The thickness of a small book cover." },
+            { thickness: 25.6, text: "The thickness of a smartphone screen." },
+            { thickness: 51.2, text: "The thickness of a piece of cardboard." },
+            { thickness: 102.4, text: "The thickness of a thick notebook." }
+        ];
+
+        foldButton.addEventListener('click', () => {
+            // Fold the paper
+            thickness *= 2; // Each fold doubles the thickness
+            foldCount++; // Track number of folds
+
+            // Update paper appearance
+            paperDiv.style.transform = `scaleY(${Math.pow(2, foldCount)})`; // Scaling the paper to show the effect
+
+            // Convert the thickness to appropriate units
+            let displayedThickness = thickness;
+            let unit = "mm";
+            let cmThickness = thickness * mmToCm;
+            let inchThickness = thickness * mmToInches;
+
+            if (thickness >= 1000) { // If the paper's thickness exceeds 1000mm, switch to cm
+                displayedThickness = cmThickness.toFixed(1);
+                unit = "cm";
+            }
+            if (cmThickness >= 100) { // If the thickness is over 100 cm, switch to inches
+                displayedThickness = inchThickness.toFixed(1);
+                unit = "inches";
+            }
+
+            // Update the score with the thickness and unit
+            scoreDiv.innerText = `Thickness: ${displayedThickness}${unit}`;
+
+            // Check for description based on the current thickness
+            const description = descriptions.find(d => thickness <= d.thickness);
+            descriptionDiv.innerText = description ? `Your paper is now ${displayedThickness}${unit} tall. ${description.text}` : `Your paper is now ${displayedThickness}${unit} tall. Keep going!`;
+
+            // Optional: Add a limit to the number of folds or a message when a threshold is reached
+            if (thickness >= moonDistanceMm) {
+                foldButton.disabled = true; // Disable the fold button once it reaches the moon
+                scoreDiv.innerText = `Your paper is now ${moonDistanceKm} km tall.`;
+                descriptionDiv.innerText = `Congratulations, after only ${foldCount} folds your piece of paper has reached the moon!`;
+            }
+        });
+    </script>
+
+</body>
+</html>
