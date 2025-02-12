@@ -22,6 +22,7 @@
             border: 1px solid #000;
             margin: 20px;
             position: relative;
+            transform-origin: center;
             transition: transform 0.3s ease;
         }
         .score {
@@ -47,11 +48,18 @@
         button:hover {
             background-color: #45a049;
         }
+        .fold-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
 
-    <div class="paper" id="paper"></div>
+    <div class="fold-wrapper">
+        <div class="paper" id="paper"></div>
+    </div>
     <button id="foldButton">Fold</button>
     <div class="score" id="score">Thickness: 0.1mm</div>
     <div class="description" id="description">Start folding to see how thick the paper gets!</div>
@@ -71,6 +79,7 @@
         const mmToCm = 0.1;
         const mmToInches = 0.03937;
 
+        // Descriptions based on thickness milestones
         const descriptions = [
             { thickness: 0.2, text: "The thickness of a strand of human hair." },
             { thickness: 0.4, text: "The width of a grain of sand." },
@@ -89,8 +98,8 @@
             thickness *= 2; // Each fold doubles the thickness
             foldCount++; // Track number of folds
 
-            // Update paper appearance
-            paperDiv.style.transform = `scaleY(${Math.pow(2, foldCount)})`; // Scaling the paper to show the effect
+            // Update paper appearance (fold/unfold animation)
+            paperDiv.style.transform = `scaleY(${Math.pow(2, foldCount)})`; // Folding/Unfolding effect
 
             // Convert the thickness to appropriate units
             let displayedThickness = thickness;
