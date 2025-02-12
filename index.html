@@ -7,8 +7,8 @@
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fafafa;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -16,117 +16,142 @@
             text-align: center;
             height: 100vh;
         }
+
         h1 {
-            font-size: 32px;
-            margin-bottom: 20px;
-        }
-        .score {
-            font-size: 24px;
+            font-size: 36px;
             font-weight: bold;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .score, .fold-number, .description {
+            font-size: 22px;
             margin-top: 20px;
+            color: #555;
         }
-        .description {
-            font-size: 18px;
+
+        .fold-number {
+            font-size: 20px;
             margin-top: 10px;
+            color: #333;
         }
+
         button {
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 12px 25px;
+            font-size: 18px;
             cursor: pointer;
             background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 5px;
-            margin-top: 20px; /* Add some space between the button and text */
+            border-radius: 8px;
+            margin-top: 30px;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         button:hover {
             background-color: #45a049;
+        }
+
+        .item-image {
+            width: 120px;
+            height: 120px;
+            margin-top: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .item-image img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+        }
+
+        .content-container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <h1>Paper Folding Game</h1>
-    <button id="foldButton">Fold the Paper</button>
-    <div class="score" id="score">Thickness: 0.1mm</div>
-    <div class="description" id="description">Start folding to see how thick the paper gets!</div>
+
+    <div class="content-container">
+        <h1>Paper Folding Game</h1>
+        <div id="foldNumber" class="fold-number">Fold 0</div>
+        <div id="score" class="score">Thickness: 0.1mm</div>
+        <div id="description" class="description">Start folding to see how thick the paper gets!</div>
+        <button id="foldButton">Fold the Paper</button>
+        <div id="itemImage" class="item-image"></div>
+    </div>
 
     <script>
         const foldButton = document.getElementById('foldButton');
         const scoreDiv = document.getElementById('score');
         const descriptionDiv = document.getElementById('description');
+        const foldNumberDiv = document.getElementById('foldNumber');
+        const itemImage = document.getElementById('itemImage');
 
         let thickness = 0.1; // Starting thickness in mm
         let foldCount = 0;
 
-        // Milestones for each fold (first 20 folds for simplicity)
-        const milestones = [
-            "Thicker than a strand of human hair.",
-            "Thicker than a grain of sand.",
-            "As thick as a strand of spaghetti.",
-            "Thicker than a wooden pencil.",
-            "As thick as a matchstick.",
-            "Reaching the thickness of a small book.",
-            "As thick as a smartphone.",
-            "Taller than a soda can.",
-            "Reaching the height of a human hand.",
-            "As tall as a bowling pin.",
-            "As tall as a child.",
-            "As tall as an adult human.",
-            "Taller than a basketball player.",
-            "Taller than a giraffe.",
-            "Reaching the height of a 4-story building.",
-            "As tall as Big Ben.",
-            "Reaching the height of Mount Everest!",
-            "Taller than Earth's atmosphere.",
-            "Halfway to the Moon.",
-            "Reaching the Moon!"
+        // Items to compare paper thickness with, including their respective images
+        const items = [
+            { fold: 1, description: "As thick as a strand of human hair.", image: "https://upload.wikimedia.org/wikipedia/commons/d/d4/Human_hair_2.jpg" },
+            { fold: 2, description: "As thick as a grain of sand.", image: "https://upload.wikimedia.org/wikipedia/commons/9/9d/Sand_grain.jpg" },
+            { fold: 3, description: "As thick as a strand of spaghetti.", image: "https://upload.wikimedia.org/wikipedia/commons/0/0c/Spaghetti_-_eating_-_crop.jpg" },
+            { fold: 4, description: "As thick as a wooden pencil.", image: "https://upload.wikimedia.org/wikipedia/commons/0/0d/Pencil.jpg" },
+            { fold: 5, description: "As thick as a matchstick.", image: "https://upload.wikimedia.org/wikipedia/commons/0/0b/Matchstick.jpg" },
+            { fold: 6, description: "As thick as a small book.", image: "https://upload.wikimedia.org/wikipedia/commons/4/4f/Book.jpg" },
+            { fold: 7, description: "As thick as a smartphone.", image: "https://upload.wikimedia.org/wikipedia/commons/6/6c/Smartphone_%28black%29.jpg" },
+            { fold: 8, description: "As thick as a soda can.", image: "https://upload.wikimedia.org/wikipedia/commons/9/92/Soft_drink_can.jpg" },
+            { fold: 9, description: "As thick as a bowling pin.", image: "https://upload.wikimedia.org/wikipedia/commons/7/7f/Bowling_pin.jpg" },
+            { fold: 10, description: "As thick as an adult human.", image: "https://upload.wikimedia.org/wikipedia/commons/6/6f/Adult_human.jpg" },
+            { fold: 11, description: "As thick as a giraffe's neck.", image: "https://upload.wikimedia.org/wikipedia/commons/1/1e/Giraffe_in_Masai_Mara.jpg" },
+            { fold: 12, description: "As thick as a 4-story building.", image: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Mount_Everest_from_the_south.jpg" },
+            { fold: 13, description: "As thick as the Eiffel Tower.", image: "https://upload.wikimedia.org/wikipedia/commons/e/e6/Eiffel_Tower_from_the_River_Seine.jpg" },
+            { fold: 14, description: "As thick as Mount Everest.", image: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Mount_Everest_from_the_south.jpg" },
+            { fold: 15, description: "As thick as a skyscraper.", image: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Skyscrapers_in_New_York_City.jpg" },
+            { fold: 16, description: "As thick as the Great Wall of China.", image: "https://upload.wikimedia.org/wikipedia/commons/4/4d/Great_Wall_of_China_in_2014.jpg" },
+            { fold: 17, description: "As thick as a giant redwood tree.", image: "https://upload.wikimedia.org/wikipedia/commons/5/5a/California_redwood.jpg" },
+            { fold: 18, description: "As thick as the diameter of the Earth.", image: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Earth.jpg" },
+            { fold: 19, description: "As thick as the moon.", image: "https://upload.wikimedia.org/wikipedia/commons/c/c0/Moon_-_NASA.jpg" },
+            { fold: 20, description: "As thick as the sun.", image: "https://upload.wikimedia.org/wikipedia/commons/d/d4/Sun_image.jpg" },
+            { fold: 21, description: "As thick as the distance from Earth to Mars.", image: "https://upload.wikimedia.org/wikipedia/commons/4/42/Mars_from_the_MRO_2006.jpg" },
+            { fold: 22, description: "As thick as the distance from Earth to Jupiter.", image: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Jupiter.jpg" },
+            { fold: 23, description: "As thick as the distance from Earth to Saturn.", image: "https://upload.wikimedia.org/wikipedia/commons/4/43/Saturn_%28planet%29.jpg" },
+            { fold: 24, description: "As thick as the distance from Earth to Neptune.", image: "https://upload.wikimedia.org/wikipedia/commons/5/59/Neptune.jpg" },
+            { fold: 25, description: "As thick as the distance from Earth to Pluto.", image: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Pluto_March_2015.jpg" },
+            { fold: 26, description: "As thick as the distance from Earth to the Oort Cloud.", image: "https://upload.wikimedia.org/wikipedia/commons/4/47/Oort_cloud_en.svg" },
+            { fold: 27, description: "As thick as the distance from Earth to Alpha Centauri.", image: "https://upload.wikimedia.org/wikipedia/commons/0/0d/Alpha_Centauri.jpg" },
+            { fold: 28, description: "As thick as the distance from Earth to the center of the Milky Way.", image: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Milky_Way_Galaxy.jpg" },
+            { fold: 29, description: "As thick as the distance from Earth to Andromeda Galaxy.", image: "https://upload.wikimedia.org/wikipedia/commons/1/1e/Andromeda_Galaxy.jpg" },
+            { fold: 30, description: "As thick as the observable universe.", image: "https://upload.wikimedia.org/wikipedia/commons/c/c4/Universe_2.jpg" }
         ];
 
-        // Conversion factors
-        const mmToCm = 0.1;
-        const mmToInches = 0.03937;
-        const mmToMeters = 0.001;
-        const mmToKm = 0.000001;
-
         foldButton.addEventListener('click', () => {
-            if (foldCount >= 20) { // Limiting to 20 folds for simplicity
-                descriptionDiv.innerText = "You've reached 20 folds. The paper's thickness is beyond comprehension!";
-                foldButton.disabled = true;
-                return;
-            }
-
-            // Double the thickness with each fold
-            thickness *= 2;
+            // Fold the paper
             foldCount++;
+            thickness *= 2; // Each fold doubles the thickness
 
-            // Convert the thickness to appropriate units
-            let displayedThickness = thickness;
-            let unit = "mm";
+            // Update the fold number and thickness
+            foldNumberDiv.innerText = `Fold ${foldCount}`;
+            scoreDiv.innerText = `Thickness: ${thickness.toFixed(1)}mm`;
 
-            if (thickness >= 1000) { // Convert to cm when >= 1000 mm
-                displayedThickness = thickness * mmToCm;
-                unit = "cm";
+            // Show corresponding image and description
+            const item = items.find(item => item.fold === foldCount);
+            if (item) {
+                descriptionDiv.innerText = item.description;
+                itemImage.innerHTML = `<img src="${item.image}" alt="Image for Fold ${foldCount}" />`;
+            } else {
+                descriptionDiv.innerText = "The paper is now thicker than the observable universe!";
+                itemImage.innerHTML = "";
             }
-            if (displayedThickness >= 100) { // Convert to inches when >= 100 cm
-                displayedThickness = displayedThickness * mmToInches;
-                unit = "inches";
-            }
-            if (displayedThickness >= 1000) { // Convert to meters when >= 1000 inches
-                displayedThickness = displayedThickness * mmToMeters;
-                unit = "m";
-            }
-            if (displayedThickness >= 1000) { // Convert to kilometers when >= 1000 meters
-                displayedThickness = displayedThickness * mmToKm;
-                unit = "km";
-            }
-
-            // Display the updated thickness with the correct unit
-            scoreDiv.innerText = `Thickness: ${displayedThickness.toFixed(3)} ${unit}`;
-
-            // Display milestone description based on current fold count
-            const milestone = milestones[foldCount - 1] || "Your paper continues to grow!";
-            descriptionDiv.innerText = `Fold ${foldCount}: ${milestone}`;
         });
     </script>
+
 </body>
 </html>
