@@ -3,134 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paper Folding Game</title>
+    <title>Paper Folding Simulator</title>
     <style>
-        body {
+        * {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #fafafa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(45deg, #ff7eb3, #ff758c);
+            color: #fff;
             text-align: center;
-            height: 100vh;
+            padding: 50px;
+            min-height: 100vh;
         }
 
         h1 {
-            font-size: 36px;
+            font-size: 5rem;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        p {
+            font-size: 2rem;
+            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        #output {
+            font-size: 2rem;
             font-weight: bold;
-            margin-bottom: 30px;
-            color: #333;
-        }
-
-        .score, .fold-number, .description {
-            font-size: 22px;
-            margin-top: 20px;
-            color: #555;
-        }
-
-        .fold-number {
-            font-size: 20px;
-            margin-top: 10px;
-            color: #333;
-        }
-
-        button {
-            padding: 12px 25px;
-            font-size: 18px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            margin-top: 30px;
-            transition: background-color 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .item-image {
-            width: 120px;
-            height: 120px;
-            margin-top: 25px;
-            transition: transform 0.3s ease;
-        }
-
-        .item-image img {
-            max-width: 100%;
-            max-height: 100%;
-            border-radius: 8px;
-        }
-
-        .content-container {
+            padding: 30px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 12px;
             width: 100%;
-            max-width: 600px;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #fff;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            max-width: 900px;
+            margin: 20px auto;
+            transition: all 0.3s ease;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4);
         }
+
+        #foldBtn {
+            padding: 25px 50px;
+            background-color: #ffcc00;
+            color: #000;
+            border: none;
+            font-size: 2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        #foldBtn:hover {
+            background-color: #ff9900;
+            transform: scale(1.1);
+        }
+
+        #foldBtn:active {
+            background-color: #ff6600;
+        }
+
+        #foldCount {
+            font-size: 2.5rem;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: bold;
+        }
+
+        #funnyComparison {
+            font-size: 2rem;
+            margin-top: 40px;
+            color: #ffddaa;
+            font-style: italic;
+            max-width: 900px;
+            margin: 0 auto;
+            line-height: 1.8;
+            transition: opacity 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        #output, #funnyComparison {
+            animation: fadeIn 1s ease-in-out;
+        }
+
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div class="content-container">
-        <h1>Paper Folding Game</h1>
-        <div id="foldNumber" class="fold-number">Fold 0</div>
-        <div id="score" class="score">Thickness: 0.1 mm</div>
-        <div id="description" class="description">Start folding to see how thick the paper gets!</div>
-        <button id="foldButton">Fold the Paper</button>
-        <div id="itemImage" class="item-image"></div>
+    <h1>Paper Folding Simulator</h1>
+    <p>Keep folding and see how tall your paper gets! Can you reach space?</p>
+
+    <div id="output">
+        Your paper is now 0.2mm tall. About as thick as a strand of human hair.
+    </div>
+    
+    <button id="foldBtn">Fold Paper</button>
+    <div id="foldCount">Folds: 1</div>
+
+    <div id="funnyComparison">
+        🤔 Fun fact: If you folded a pizza this many times, it would be illegal in Italy.
     </div>
 
     <script>
-        const foldButton = document.getElementById('foldButton');
-        const scoreDiv = document.getElementById('score');
-        const descriptionDiv = document.getElementById('description');
-        const foldNumberDiv = document.getElementById('foldNumber');
-        const itemImage = document.getElementById('itemImage');
+        let folds = 0;
+        let height = 0.2;
+        const output = document.getElementById('output');
+        const foldBtn = document.getElementById('foldBtn');
+        const foldCount = document.getElementById('foldCount');
+        const funnyComparison = document.getElementById('funnyComparison');
 
-        let thickness = 0.1; // Starting thickness in mm
-        let foldCount = 0;
-
-        // Items to compare paper thickness with, including their respective images
-        const items = [
-            // (No changes to the items array)
+        const messages = [
+            "Your paper is now 0.2mm tall. About as thick as a strand of human hair.",
+            "Your paper is now 1.6mm tall. The thickness of a spaghetti noodle.",
+            "Your paper is now 3.2mm tall. The height of a ladybug.",
+            "Your paper is now 6.4mm tall. The width of a sunflower seed.",
+            "Your paper is now 12.8mm tall. The size of a peanut.",
+            "Your paper is now 25.6mm tall. The width of a bottle cap.",
+            "Your paper is now 51.2mm tall. The height of a chicken nugget.",
+            "Your paper is now 10.2cm tall. The size of a taco shell.",
+            "Your paper is now 20.5cm tall. The height of a hamburger bun.",
+            "Your paper is now 41cm tall. The height of a bowling pin.",
+            "Your paper is now 81.9cm tall. The height of an average toddler.",
+            "Your paper is now 1.6m tall. About the height of a fridge.",
+            "Your paper is now 3.3m tall. The length of a park bench.",
+            "Your paper is now 6.6m tall. The height of a giraffe.",
+            "Your paper is now 13.1m tall. The length of a school bus.",
+            "Your paper is now 26.2m tall. The length of a blue whale.",
+            "Your paper is now 52.4m tall. The wingspan of a Boeing 747.",
+            "Your paper is now 104.9m tall. The height of the Statue of Liberty.",
+            "Your paper is now 209.7m tall. The height of a football field.",
+            "Your paper is now 419.4m tall. Taller than the Eiffel Tower.",
+            "Your paper is now 838.9m tall. The height of the Burj Khalifa.",
+            "Your paper is now 1.7km tall. The length of 15 football fields.",
+            "Your paper is now 3.4km tall. The length of Central Park.",
+            "Your paper is now 6.7km tall. The length of the Las Vegas Strip.",
+            "Your paper is now 13.4km tall. Taller than Mount Everest.",
+            "Your paper is now 26.8km tall. The depth of the Mariana Trench.",
+            "Your paper is now 53.7km tall. The distance from Earth’s surface to the ozone layer.",
+            "Your paper is now 107.4km tall. Welcome to space!",
+            "Your paper is now 214.7km tall. Taller than the Suez Canal is long.",
+            "Your paper is now 429.5km tall. Longer than the Great Wall of China.",
+            "Your paper is now 859km tall. The distance between London and Berlin.",
+            "Your paper is now 1,718km tall. The length of the Amazon River.",
+            "Your paper is now 3,436km tall. The distance from New York to Los Angeles.",
+            "Your paper is now 6,872km tall. The diameter of Earth.",
+            "Your paper is now 13,744km tall. The circumference of Earth!",
+            "Your paper is now 27,488km tall. You could now wrap it around the Earth.",
+            "Your paper is now 54,976km tall. The diameter of Neptune.",
+            "Your paper is now 109,951km tall. The size of Saturn (without rings).",
+            "Your paper is now 219,902km tall. The diameter of Proxima Centauri.",
+            "Your paper is now 439,805km tall. Congratulations! You've reached the Moon!"
         ];
 
-        foldButton.addEventListener('click', () => {
-            // Fold the paper
-            foldCount++;
-            thickness *= 2; // Each fold doubles the thickness
+        const funFacts = [
+            "If this was a burrito, you'd need a truck to deliver the sauce.",
+            "This is officially taller than 5 stacks of pancakes!",
+            "If your paper was made of money, you'd be richer than Elon Musk!",
+            "NASA might start tracking your paper soon.",
+            "At this rate, aliens might mistake your paper for a spaceship.",
+            "Your paper is now officially a landmark!",
+            "Breaking News: Scientists are concerned about your paper tower.",
+            "If you fold it a few more times, you could high-five the Moon!"
+        ];
 
-            // Update the fold number
-            foldNumberDiv.innerText = `Fold ${foldCount}`;
-
-            // Convert and display thickness
-            let displayThickness = `${thickness.toFixed(1)} mm`;
-            if (thickness >= 1000) {
-                displayThickness = `${(thickness / 1000).toFixed(3)} m`;
-                if (thickness >= 1000000) {
-                    displayThickness = `${(thickness / 1000000).toFixed(3)} km`;
-                }
-            } else if (thickness >= 10) {
-                displayThickness = `${(thickness / 10).toFixed(1)} cm`;
-            }
-            scoreDiv.innerText = `Thickness: ${displayThickness}`;
-
-            // Show corresponding image and description
-            const item = items.find(item => item.fold === foldCount);
-            if (item) {
-                descriptionDiv.innerText = item.description;
-                itemImage.innerHTML = `<img src="${item.image}" alt="Image for Fold ${foldCount}" />`;
+        foldBtn.addEventListener('click', () => {
+            if (folds < messages.length - 1) {
+                folds++;
+                output.textContent = messages[folds];
+                foldCount.textContent = "Folds: " + (folds + 1);
+                funnyComparison.textContent = "🤔 " + funFacts[Math.floor(Math.random() * funFacts.length)];
             } else {
-                descriptionDiv.innerText = "The paper is now thicker than the observable universe!";
-                itemImage.innerHTML = "";
+                foldBtn.disabled = true;
+                funnyComparison.textContent = "🚀 Your paper has officially left Earth!";
             }
         });
     </script>
