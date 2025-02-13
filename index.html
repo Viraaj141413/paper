@@ -18,10 +18,14 @@
             text-align: center;
             padding: 50px;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         h1 {
-            font-size: 5rem;
+            font-size: 6rem;
             margin-bottom: 20px;
             text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
         }
@@ -46,12 +50,12 @@
             box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4);
         }
 
-        #foldBtn {
+        #foldBtn, #unfoldBtn {
             padding: 25px 50px;
             background-color: #ffcc00;
             color: #000;
             border: none;
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
@@ -59,12 +63,12 @@
             transition: transform 0.3s ease, background-color 0.3s ease;
         }
 
-        #foldBtn:hover {
+        #foldBtn:hover, #unfoldBtn:hover {
             background-color: #ff9900;
             transform: scale(1.1);
         }
 
-        #foldBtn:active {
+        #foldBtn:active, #unfoldBtn:active {
             background-color: #ff6600;
         }
 
@@ -95,6 +99,62 @@
             animation: fadeIn 1s ease-in-out;
         }
 
+        /* Media Queries for responsive design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 3.5rem;
+            }
+
+            p {
+                font-size: 1.5rem;
+            }
+
+            #output {
+                font-size: 1.5rem;
+                padding: 20px;
+            }
+
+            #foldBtn, #unfoldBtn {
+                padding: 20px 40px;
+                font-size: 1.8rem;
+            }
+
+            #foldCount {
+                font-size: 2rem;
+            }
+
+            #funnyComparison {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            p {
+                font-size: 1.2rem;
+            }
+
+            #output {
+                font-size: 1.2rem;
+                padding: 15px;
+            }
+
+            #foldBtn, #unfoldBtn {
+                padding: 15px 30px;
+                font-size: 1.2rem;
+            }
+
+            #foldCount {
+                font-size: 1.8rem;
+            }
+
+            #funnyComparison {
+                font-size: 1.2rem;
+            }
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -107,7 +167,11 @@
         Your paper is now 0.2mm tall. About as thick as a strand of human hair.
     </div>
     
-    <button id="foldBtn">Fold Paper</button>
+    <div>
+        <button id="foldBtn">Fold Paper</button>
+        <button id="unfoldBtn">Unfold Paper</button>
+    </div>
+    
     <div id="foldCount">Folds: 1</div>
 
     <div id="funnyComparison">
@@ -119,6 +183,7 @@
         let height = 0.2;
         const output = document.getElementById('output');
         const foldBtn = document.getElementById('foldBtn');
+        const unfoldBtn = document.getElementById('unfoldBtn');
         const foldCount = document.getElementById('foldCount');
         const funnyComparison = document.getElementById('funnyComparison');
 
@@ -185,6 +250,15 @@
             } else {
                 foldBtn.disabled = true;
                 funnyComparison.textContent = "🚀 Your paper has officially left Earth!";
+            }
+        });
+
+        unfoldBtn.addEventListener('click', () => {
+            if (folds > 0) {
+                folds--;
+                output.textContent = messages[folds];
+                foldCount.textContent = "Folds: " + (folds + 1);
+                funnyComparison.textContent = "🤔 " + funFacts[Math.floor(Math.random() * funFacts.length)];
             }
         });
     </script>
